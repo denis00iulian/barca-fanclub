@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:15
+    container_name: fanclub-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-barca_fanclub}
+      POSTGRES_USER: ${POSTGRES_USER:-barca_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-barca_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend/fanclub-api
+      dockerfile: Dockerfile
+    container_name: fanclub-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Spring Datasource (override application.yml localhost)
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-barca_fanclub}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-barca_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-barca_pass}
+
+      # Optional: make JWT secret configurable in Docker
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-bIm7hA6c8uYB2hH0k0lY2uXq3XxvT4k5Zrv24Bra1Ds23VZr2cKp6lqQ9xJt2aW1X0uN3pD7sG5hK4mQ1xE0Q}
+      APP_JWT_EXPIRATION_MINUTES: ${APP_JWT_EXPIRATION_MINUTES:-240}
+
+      # Recommended in containers
+      SPRING_JPA_OPEN_IN_VIEW: "false"
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

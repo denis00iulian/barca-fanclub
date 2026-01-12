@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/barca_fanclub
+    username: barca_user
+    password: barca_pass
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+  security:
+    user:
+      name: disabled
+      password: disabled
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.security: DEBUG
+
+app:
+  jwt:
+    secret: "bIm7hA6c8uYB2hH0k0lY2uXq3XxvT4k5Zrv24Bra1Ds23VZr2cKp6lqQ9xJt2aW1X0uN3pD7sG5hK4mQ1xE0Q"
+    expiration-minutes: 240

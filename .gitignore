@@ -1,0 +1,8 @@
+.idea/
+*.iml
+.vscode/
+.env
+**/target/
+**/out/
+**/*.log
+docker-compose.override.yml
